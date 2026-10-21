@@ -40,6 +40,7 @@ for (const p of catalog.prefixes.filter(p => p.network !== 'RED')) {
 }
 const cases = [
   ...Object.entries(fixtures).map(([kind, raw]) => [raw, kind, true]),
+  [cup.match(/.{4}/g).join('\u00a0'), 'cup', true], [cup.match(/.{4}/g).join('\u202f'), 'any', true],
   ['', 'any', false], ['0', 'any', false], ['0'.repeat(16), 'any', false],
   [usd, 'cup', false], [cup, 'usd', false],
   [cup.slice(0, -1) + (Number(cup.at(-1)) + 1) % 10, 'any', false],
@@ -80,9 +81,11 @@ foreach ($checks as [$raw, $kind]) {
     try { $results[] = isCubanCard($raw, $v, $kind); }
     catch (InvalidArgumentException $e) { $results[] = get_class($e) . ': ' . $e->getMessage(); }
 }
+// Con el modificador u, preg_replace devuelve null ante UTF-8 inválido.
+$results[] = isCubanCard("9205\\xff", $v);
 echo json_encode($results);
 ` })
   assert.equal(result.status, 0, result.stderr || result.stdout)
   assert.equal(result.stderr, '')
-  assert.deepEqual(JSON.parse(result.stdout), checks.map(([, , expected]) => expected))
+  assert.deepEqual(JSON.parse(result.stdout), [...checks.map(([, , expected]) => expected), false])
 })

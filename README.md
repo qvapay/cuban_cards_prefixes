@@ -293,7 +293,7 @@ describe('9205 0699 0000 0000')
 <details>
 <summary><b>PHP</b></summary>
 
-Un `$kind` desconocido lanza `InvalidArgumentException` con la lista de valores admitidos.
+Un `$kind` desconocido lanza `InvalidArgumentException` con la lista de valores admitidos. El modificador `u` hace que `\s` también quite los espacios Unicode, como el espacio duro que traen los números copiados de una web.
 
 ```php
 <?php
@@ -311,7 +311,7 @@ function luhn(string $n): bool {
 }
 
 function normalizeCard(string $raw, array $v): string {
-    return preg_replace('/' . $v['normalize']['strip_pattern'] . '/', '', $raw);
+    return preg_replace('/' . $v['normalize']['strip_pattern'] . '/u', '', $raw) ?? '';
 }
 
 // $kind: any | red | cup | usd | usd_mlc | clasica | clasica_empresarial | ais_cup | ais_usd
